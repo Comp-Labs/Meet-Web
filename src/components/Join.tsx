@@ -70,46 +70,30 @@ export default function JoinMeetingUI() {
                     const lowerCaseText = trimText.toLowerCase();
                     const md5String = md5(lowerCaseText);
                     // API Request
-                    // const participantOptions = {
-                    //     method: 'POST',
-                    //     url: 'https://api.cluster.dyte.in/v2/meetings/' + formData.id + '/participants',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //         Authorization: 'Basic NWFjMzA5MzItNDM5NS00Y2Y3LWE3NDctNDY3NTRmOWM3YzY0OjdkMDgzOTU0ZjBiZmU2ZTYyODc2'
-                    //     },
-                    //     data: {
-                    //         name: formData.name,
-                    //         picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
-                    //         preset_name: 'group_call_host',
-                    //         custom_participant_id: formData.email
-                    //     }
-                    // };
-                    // axios.request(participantOptions).then(function (response) {
-                    //     console.log(response.data);
-                    //     setParticipantData(response.data);
-                    // }).catch(function (error) {
-                    //     console.error(error);
-                    //     alert(error);
-                    // });
                     const participantOptions = {
                         method: 'POST',
+                        url: 'https://api.cluster.dyte.in/v2/meetings/' + formData.id + '/participants',
                         headers: {
                             'Content-Type': 'application/json',
                             Authorization: 'Basic NWFjMzA5MzItNDM5NS00Y2Y3LWE3NDctNDY3NTRmOWM3YzY0OjdkMDgzOTU0ZjBiZmU2ZTYyODc2'
                         },
-                        body: '{"name":' + formData.name + ',"picture":"https://gravatar.com/avatar/"' + md5String + '"?s=512?d=mp?r=pg","preset_name":"group_call_host","custom_participant_id":' + formData.email + '}'
+                        data: {
+                            name: formData.name,
+                            picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
+                            preset_name: 'group_call_host',
+                            custom_participant_id: formData.email
+                            // picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
+                        }
                     };
-                    let participantDetails;
-                    fetch('https://api.cluster.dyte.in/v2/meetings/' + formData.id + '/participants', participantOptions)
-                        .then(response => response.json())
-                        .then(response => {
-                            console.log(response);
-                            participantDetails = response;
-                        })
-                        .catch(err => console.error(err));
-                    alert(JSON.stringify(participantDetails, null, 2))
-                    window.location.href = '/meet?authToken=' + participantDetails;
-                    alert(JSON.stringify(formData, null, 2));
+                    axios.request(participantOptions).then(function (response) {
+                        console.log(response.data);
+                        setParticipantData(response.data);
+                        // alert(JSON.stringify(participantData))
+                        window.location.href = '/meet?authToken=' + participantData.data.token;
+                    }).catch(function (error) {
+                        console.error(error);
+                        alert(error);
+                    });
                 }}
             >
                 <Typography component="h3" fontSize="xl1" fontWeight="lg">

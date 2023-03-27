@@ -110,18 +110,18 @@ export default function CreateMeetingUI() {
               picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
               preset_name: 'group_call_host',
               custom_participant_id: formData.email
+              // picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
             }
           };
           axios.request(participantOptions).then(function (response) {
             console.log(response.data);
             setParticipantData(response.data);
+            // alert(JSON.stringify(participantData))
+            window.location.href = '/meet?authToken=' + participantData.data.token;
           }).catch(function (error) {
             console.error(error);
             alert(error);
           });
-          alert(JSON.stringify(formData, null, 2));
-          window.location.href = '/meet?authToken=' + participantData.data.token;
-          // participantData.data.token
         }}
       >
         <Typography component="h3" fontSize="xl1" fontWeight="lg">
@@ -176,6 +176,6 @@ export default function CreateMeetingUI() {
           Start Meeting
         </Button>
       </form>
-    </Box>
+    </Box >
   );
 }
