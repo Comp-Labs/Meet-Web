@@ -91,6 +91,13 @@ export default function CreateMeetingUI() {
               live_stream_on_start: false
             }
           };
+          axios.request(meetingOptions).then(function (response) {
+            console.log(response.data);
+            setMeetingData(response.data);
+          }).catch(function (error) {
+            console.error(error);
+            alert(error);
+          });
           const participantOptions = {
             method: 'POST',
             url: 'https://api.cluster.dyte.in/v2/meetings/' + meetingData.data.id + '/participants',
@@ -106,13 +113,6 @@ export default function CreateMeetingUI() {
               // picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
             }
           };
-          axios.request(meetingOptions).then(function (response) {
-            console.log(response.data);
-            setMeetingData(response.data);
-          }).catch(function (error) {
-            console.error(error);
-            alert(error);
-          });
           axios.request(participantOptions).then(function (response) {
             console.log(response.data);
             setParticipantData(response.data);

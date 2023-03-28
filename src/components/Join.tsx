@@ -72,14 +72,13 @@ export default function JoinMeetingUI() {
                     // API Request
                     const participantOptions = {
                         method: 'POST',
-                        url: 'https://api.cluster.dyte.in/v2/meetings/' + formData.id + '/participants',
+                        url: 'https://meet-backend.fly.dev/meetings/' + formData.id + '/participants',
                         headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: 'Basic NWFjMzA5MzItNDM5NS00Y2Y3LWE3NDctNDY3NTRmOWM3YzY0OjdkMDgzOTU0ZjBiZmU2ZTYyODc2'
+                            'Content-Type': 'application/json'
                         },
                         data: {
                             name: formData.name,
-                            picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
+                            picture: 'https://cdn.jsdelivr.net/gh/Comp-Labs/cdn/img/logo-removebg.jpg',
                             preset_name: 'group_call_host',
                             custom_participant_id: formData.email
                             // picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',

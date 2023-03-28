@@ -20,8 +20,7 @@
     "@shoelace-style/shoelace": "latest",
     "@types/node": "latest",
     "axios": "latest",
-    "md5": "latest",
-    "md5-ts": "^0.1.6",
+    "md5-ts": "latest",
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "latest"
