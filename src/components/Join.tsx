@@ -11,7 +11,7 @@ import Typography from "@mui/joy/Typography";
 import Divider from "@mui/joy/Divider";
 import FormHelperText from '@mui/joy/FormHelperText';
 import axios from 'axios';
-import md5 from 'md5-ts';
+import { createHash } from 'crypto';
 
 interface FormElements extends HTMLFormControlsCollection {
     name: HTMLInputElement;
@@ -68,7 +68,7 @@ export default function JoinMeetingUI() {
                     // Gravatar Function
                     const trimText = formData.email.trim();
                     const lowerCaseText = trimText.toLowerCase();
-                    const md5String = md5(lowerCaseText);
+                    const md5String = createHash('md5').update(lowerCaseText).digest('hex');
                     // API Request
                     const participantOptions = {
                         method: 'POST',
@@ -78,20 +78,17 @@ export default function JoinMeetingUI() {
                         },
                         data: {
                             name: formData.name,
-                            picture: 'https://cdn.jsdelivr.net/gh/Comp-Labs/cdn/img/logo-removebg.jpg',
+                            picture: 'https://gravatar.com/avatar/' + md5String + '?s=512?d=mp?r=pg',
                             preset_name: 'group_call_host',
                             custom_participant_id: formData.email
-                            // picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
+                            // picture: 'https://cdn.jsdelivr.net/gh/Comp-Labs/cdn/img/logo-removebg.jpg',
                         }
                     };
                     axios.request(participantOptions).then(function (response) {
                         console.log(response.data);
-                        setParticipantData(response.data);
-                        // alert(JSON.stringify(participantData))
-                        window.location.href = '/meet?authToken=' + participantData.data.token;
+                        window.location.href = '/meet?authToken=' + response.data.data.token;
                     }).catch(function (error) {
                         console.error(error);
-                        alert(error);
                     });
                 }}
             >
