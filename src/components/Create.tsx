@@ -112,7 +112,7 @@ export default function CreateMeetingUI() {
                                 name: formData.name,
                                 picture: 'https://gravatar.com/avatar/' + md5String + '?s=512?d="http%3A%2F%2Flocalhost%3A3000%2Fuser.png"?r=pg',
                                 preset_name: 'group_call_host',
-                                custom_participant_id: formData.email
+                                client_specific_id: formData.email
                                 // picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
                             }
                         };
