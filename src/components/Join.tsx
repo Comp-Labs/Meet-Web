@@ -12,6 +12,8 @@ import Divider from "@mui/joy/Divider";
 import FormHelperText from '@mui/joy/FormHelperText';
 import axios from 'axios';
 import { createHash } from 'crypto';
+import { DyteMeeting } from '@dytesdk/react-ui-kit';
+import { useDyteClient } from '@dytesdk/react-web-core';
 
 interface FormElements extends HTMLFormControlsCollection {
     name: HTMLInputElement;
@@ -20,6 +22,27 @@ interface FormElements extends HTMLFormControlsCollection {
 }
 interface SignInFormElement extends HTMLFormElement {
     readonly elements: FormElements;
+}
+
+export function Meet(props: { authToken: string; }) {
+    const [meeting, initMeeting] = useDyteClient();
+    React.useEffect(() => {
+        const searchParams = new URL(window.location.href).searchParams;
+        const authToken = props.authToken;
+        // searchParams.get('authToken')
+        if (!authToken) {
+            alert(
+                "An authToken wasn't passed, please pass an authToken to join a meeting."
+            );
+            return;
+        }
+
+        initMeeting({
+            authToken,
+        });
+    }, []);
+
+    return <DyteMeeting meeting={meeting!} showSetupScreen />;
 }
 
 export default function JoinMeetingUI() {
@@ -88,6 +111,7 @@ export default function JoinMeetingUI() {
                     };
                     axios.request(participantOptions).then(function (response) {
                         console.log(response.data);
+                        // return <Meet authToken={response.data.data.token} />
                         window.location.href = '/meet?authToken=' + response.data.data.token;
                     }).catch(function (error) {
                         console.error(error);

@@ -8,6 +8,8 @@ export default function Meeting() {
     useEffect(() => {
         const searchParams = new URL(window.location.href).searchParams;
         const authToken = searchParams.get('authToken');
+        // const audio = searchParams.get('audio');
+        // const video = searchParams.get('video');
         const roomName = searchParams.get('roomName') || '';
 
         if (!authToken) {
@@ -19,7 +21,10 @@ export default function Meeting() {
 
         initMeeting({
             authToken,
-            roomName,
+            defaults: {
+                audio: searchParams.get('audio') || '',
+                video: searchParams.get('video') || '',
+            },
         });
     }, []);
 

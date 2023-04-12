@@ -12,6 +12,9 @@ import Divider from "@mui/joy/Divider";
 import FormHelperText from '@mui/joy/FormHelperText';
 import axios from "axios";
 import { createHash } from 'crypto';
+import { DyteMeeting } from '@dytesdk/react-ui-kit';
+import { useDyteClient } from '@dytesdk/react-web-core';
+import Stack from '@mui/joy/Stack';
 // import md5 from 'md5-ts';
 
 interface FormElements extends HTMLFormControlsCollection {
@@ -21,16 +24,37 @@ interface FormElements extends HTMLFormControlsCollection {
     waitingRoom: HTMLInputElement;
     audio: HTMLInputElement;
     video: HTMLInputElement;
+    recordOnStart: HTMLInputElement;
+    liveStreamOnStart: HTMLInputElement;
 }
 
 interface SignInFormElement extends HTMLFormElement {
     readonly elements: FormElements;
 }
 
-export function Meet() {
-    return (
-        <div />
-    )
+export function Meet(props: { authToken: string; audio: boolean; video: boolean; }) {
+    const [meeting, initMeeting] = useDyteClient();
+    React.useEffect(() => {
+        const searchParams = new URL(window.location.href).searchParams;
+        const authToken = props.authToken;
+        // searchParams.get('authToken')
+        if (!authToken) {
+            alert(
+                "An authToken wasn't passed, please pass an authToken to join a meeting."
+            );
+            return;
+        }
+
+        initMeeting({
+            authToken,
+            defaults: {
+                audio: props.audio,
+                video: props.video,
+            },
+        });
+    }, []);
+
+    return <DyteMeeting meeting={meeting!} showSetupScreen />;
 }
 
 export default function CreateMeetingUI() {
@@ -74,6 +98,8 @@ export default function CreateMeetingUI() {
                         email: formElements.email.value,
                         title: formElements.title.value,
                         waitingRoom: formElements.waitingRoom.checked,
+                        recordOnStart: formElements.recordOnStart.checked,
+                        liveStreamOnStart: formElements.liveStreamOnStart.checked,
                         defaults: {
                             audio: formElements.audio.checked,
                             video: formElements.video.checked,
@@ -96,8 +122,8 @@ export default function CreateMeetingUI() {
                         data: {
                             title: formData.title,
                             preferred_region: 'ap-south-1',
-                            record_on_start: false,
-                            live_stream_on_start: false
+                            record_on_start: formData.recordOnStart,
+                            live_stream_on_start: formData.liveStreamOnStart
                         }
                     };
                     axios.request(meetingOptions).then(function (response) {
@@ -115,12 +141,12 @@ export default function CreateMeetingUI() {
                                 picture: 'https://gravatar.com/avatar/' + hashString + '?s=512?d="http%3A%2F%2Flocalhost%3A3000%2Fuser.png"?r=pg',
                                 preset_name: 'group_call_host',
                                 client_specific_id: formData.email
-                                // picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
                             }
                         };
                         axios.request(participantOptions).then(function (response) {
                             console.log(response.data);
-                            window.location.href = '/meet?authToken=' + response.data.data.token;
+                            // return <Meet authToken={response.data.data.token} audio={formData.defaults.audio} video={formData.defaults.video} />
+                            window.location.href = '/meet?authToken=' + response.data.data.token + '&audio=' + formData.defaults.audio + '&video=' + formData.defaults.video;
                         }).catch(function (error) {
                             console.error(error);
                             alert(error);
@@ -129,28 +155,6 @@ export default function CreateMeetingUI() {
                         console.error(error);
                         alert(error);
                     });
-                    // const participantOptions = {
-                    //     method: 'POST',
-                    //     url: 'https://meet-backend.fly.dev/meetings/' + meetingData.id + '/participants',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //         Authorization: 'Basic Og=='
-                    //     },
-                    //     data: {
-                    //         name: formData.name,
-                    //         picture: 'https://gravatar.com/avatar/' + md5String + '?s=512?d="http%3A%2F%2Flocalhost%3A3000%2Fuser.png"?r=pg',
-                    //         preset_name: 'group_call_host',
-                    //         custom_participant_id: formData.email
-                    //         // picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
-                    //     }
-                    // };
-                    // axios.request(participantOptions).then(function (response) {
-                    //     console.log(response.data);
-                    //     window.location.href = '/meet?authToken=' + response.data.data.token;
-                    // }).catch(function (error) {
-                    //     console.error(error);
-                    //     alert(error);
-                    // });
                 }}
             >
                 <Typography component="h3" fontSize="xl1" fontWeight="lg">
@@ -186,25 +190,20 @@ export default function CreateMeetingUI() {
                         name="title"
                     />
                 </FormControl>
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "space-evenly",
-                        alignItems: "center"
-                    }}
-                >
+                    <Stack spacing={2} sx={{ width: '100%' }}>
                     <FormLabel>
                         <b>Options:</b>
                     </FormLabel>
-                    <br />
-                    <Checkbox size="sm" label="Waiting Room" name="waitingRoom" />
+                    <Checkbox disabled size="sm" label="Waiting Room Enabled (Coming Soon)" name="waitingRoom" />
                     <Checkbox size="sm" label="Mute Audio On Entry" name="audio" />
                     <Checkbox size="sm" label="Mute Video On Entry" name="video" />
-                </Box>
+                    <Checkbox size="sm" label="Record on Start" name="recordOnStart" />
+                    <Checkbox size="sm" label="Live Stream on Start" name="liveStreamOnStart" />
+                    </Stack>
                 <Button type="submit" fullWidth>
                     Start Meeting
                 </Button>
             </form>
-        </Box >
+        </Box>
     );
 }
