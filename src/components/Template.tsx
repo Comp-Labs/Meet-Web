@@ -109,9 +109,9 @@ export default function Template({ children }: { children: React.ReactNode }) {
                         >
                             Tech Fiddle Meet
                         </Typography>
-                        <Typography fontWeight="lg">
+                        {/* <Typography fontWeight="lg">
                             {time(today)} • {day}, {month} {date}
-                        </Typography>
+                        </Typography> */}
                         <div>
                             <Tooltip
                                 title="Help/Issues/Suggestions"

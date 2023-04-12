@@ -66,9 +66,11 @@ export default function JoinMeetingUI() {
                         id: formElements.id.value
                     };
                     // Gravatar Function
-                    const trimText = formData.email.trim();
+                    var md5 = require("blueimp-md5")
+                    const email = "Complabs28@gmail.com "
+                    const trimText = email.trim();
                     const lowerCaseText = trimText.toLowerCase();
-                    const md5String = createHash('md5').update(lowerCaseText).digest('hex');
+                    const hashString = md5(lowerCaseText);
                     // API Request
                     const participantOptions = {
                         method: 'POST',
@@ -78,7 +80,7 @@ export default function JoinMeetingUI() {
                         },
                         data: {
                             name: formData.name,
-                            picture: 'https://gravatar.com/avatar/' + md5String + '?s=512?d=mp?r=pg',
+                            picture: 'https://gravatar.com/avatar/' + hashString + '?s=512?d=mp?r=pg',
                             preset_name: 'group_call_host',
                             custom_participant_id: formData.email
                             // picture: 'https://cdn.jsdelivr.net/gh/Comp-Labs/cdn/img/logo-removebg.jpg',

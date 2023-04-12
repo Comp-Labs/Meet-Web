@@ -80,9 +80,11 @@ export default function CreateMeetingUI() {
                         }
                     };
                     // Gravatar Function
-                    const trimText = formData.email.trim();
+                    var md5 = require("blueimp-md5")
+                    const email = "Complabs28@gmail.com "
+                    const trimText = email.trim();
                     const lowerCaseText = trimText.toLowerCase();
-                    const md5String = createHash('md5').update(lowerCaseText).digest('hex');
+                    const hashString = md5(lowerCaseText);
                     // API Requests
                     const meetingOptions = {
                         method: 'POST',
@@ -110,7 +112,7 @@ export default function CreateMeetingUI() {
                             },
                             data: {
                                 name: formData.name,
-                                picture: 'https://gravatar.com/avatar/' + md5String + '?s=512?d="http%3A%2F%2Flocalhost%3A3000%2Fuser.png"?r=pg',
+                                picture: 'https://gravatar.com/avatar/' + hashString + '?s=512?d="http%3A%2F%2Flocalhost%3A3000%2Fuser.png"?r=pg',
                                 preset_name: 'group_call_host',
                                 client_specific_id: formData.email
                                 // picture: 'https://gravatar.com/avatar/' + { md5String } + '?s=512?d=mp?r=pg',
