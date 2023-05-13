@@ -12,8 +12,7 @@ import Divider from "@mui/joy/Divider";
 import FormHelperText from '@mui/joy/FormHelperText';
 import axios from "axios";
 import { createHash } from 'crypto';
-import { DyteMeeting } from '@dytesdk/react-ui-kit';
-import { useDyteClient } from '@dytesdk/react-web-core';
+import {Meet} from './Meet'
 import Stack from '@mui/joy/Stack';
 // import md5 from 'md5-ts';
 
@@ -32,34 +31,7 @@ interface SignInFormElement extends HTMLFormElement {
     readonly elements: FormElements;
 }
 
-export function Meet(props: { authToken: string; audio: boolean; video: boolean; }) {
-    const [meeting, initMeeting] = useDyteClient();
-    React.useEffect(() => {
-        const searchParams = new URL(window.location.href).searchParams;
-        const authToken = props.authToken;
-        // searchParams.get('authToken')
-        if (!authToken) {
-            alert(
-                "An authToken wasn't passed, please pass an authToken to join a meeting."
-            );
-            return;
-        }
-
-        initMeeting({
-            authToken,
-            defaults: {
-                audio: props.audio,
-                video: props.video,
-            },
-        });
-    }, []);
-
-    return <DyteMeeting meeting={meeting!} showSetupScreen />;
-}
-
 export default function CreateMeetingUI() {
-    const [meetingData, setMeetingData] = React.useState(null);
-    const [participantData, setParticipantData] = React.useState(null);
     return (
         <Box
             component="main"
@@ -111,6 +83,7 @@ export default function CreateMeetingUI() {
                     const trimText = email.trim();
                     const lowerCaseText = trimText.toLowerCase();
                     const hashString = md5(lowerCaseText);
+                    
                     // API Requests
                     const meetingOptions = {
                         method: 'POST',
@@ -131,14 +104,14 @@ export default function CreateMeetingUI() {
                         // setMeetingData(response.data);
                         const participantOptions = {
                             method: 'POST',
-                            url: 'https://meet-backend.fly.dev/meetings/' + response.data.data.id + '/participants',
+                            url: `https://meet-backend.fly.dev/meetings/${response.data.data.id}/participants`,
                             headers: {
                                 'Content-Type': 'application/json',
                                 Authorization: 'Basic Og=='
                             },
                             data: {
                                 name: formData.name,
-                                picture: 'https://gravatar.com/avatar/' + hashString + '?s=512?d="http%3A%2F%2Flocalhost%3A3000%2Fuser.png"?r=pg',
+                                picture: `https://gravatar.com/avatar/${hashString}?s=512?d=http%3A%2F%2Flocalhost%3A3000%2Fuser.png?r=pg`,
                                 preset_name: 'group_call_host',
                                 client_specific_id: formData.email
                             }
@@ -146,7 +119,7 @@ export default function CreateMeetingUI() {
                         axios.request(participantOptions).then(function (response) {
                             console.log(response.data);
                             // return <Meet authToken={response.data.data.token} audio={formData.defaults.audio} video={formData.defaults.video} />
-                            window.location.href = '/meet?authToken=' + response.data.data.token + '&audio=' + formData.defaults.audio + '&video=' + formData.defaults.video;
+                            window.location.href = `/meet?authToken=${response.data.data.token}&audio=${formData.defaults.audio}&video=${formData.defaults.video}`;
                         }).catch(function (error) {
                             console.error(error);
                             alert(error);
